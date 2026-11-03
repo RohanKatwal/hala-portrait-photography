@@ -76,8 +76,9 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const alt = (id) => `${ALBUMS[albumOf[id]]?.title ?? 'Portrait'} photography by Hala Jalal, Abu Dhabi`;
 const size = (id) => { const [w, h] = dims[id]; return w > 1600 ? [1600, Math.round(h * 1600 / w)] : [w, h]; };
 
-function img(id, { cls = '', eager = false, sizes = '(max-width: 700px) 50vw, 33vw' } = {}) {
+function img(id, { cls = '', eager = false, defer = false, sizes = '(max-width: 700px) 50vw, 33vw' } = {}) {
   const [w, h] = size(id);
+  if (defer) return `<img class="${cls}" data-src="/assets/img/${id}-640.webp" data-srcset="/assets/img/${id}-640.webp 640w, /assets/img/${id}-1600.webp ${w}w" sizes="${sizes}" width="${w}" height="${h}" alt="" decoding="async">`;
   return `<img class="${cls}" src="/assets/img/${id}-640.webp" srcset="/assets/img/${id}-640.webp 640w, /assets/img/${id}-1600.webp ${w}w" sizes="${sizes}" width="${w}" height="${h}" alt="${esc(alt(id))}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
 }
 
@@ -239,7 +240,7 @@ pages['/'] = layout({
 <section class="hero">
   <div class="hero-media" aria-hidden="true">
     ${HERO.map((col, c) => `<div class="hero-col" style="--c:${c}">${col.map((id, i) =>
-      img(id, { cls: i === 0 ? 'on' : '', eager: i === 0, sizes: '(max-width: 700px) 100vw, 34vw' })).join('')}</div>`).join('')}
+      img(id, { cls: i === 0 ? 'on' : '', eager: i === 0, defer: i > 0, sizes: '(max-width: 700px) 100vw, 34vw' })).join('')}</div>`).join('')}
   </div>
   <div class="hero-text">
     <p class="eyebrow">Photographer &amp; Videographer · ${SITE.location}</p>

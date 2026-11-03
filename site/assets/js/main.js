@@ -24,11 +24,15 @@
   // scroll reveal
   const io = new IntersectionObserver((entries) => entries.forEach((e) => {
     if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-  }), { rootMargin: '0px 0px -8% 0px' });
+  }), { rootMargin: '0px 0px 12% 0px' });
   $$('.reveal').forEach((el, i) => {
-    if (!el.style.getPropertyValue('--d') && el.classList.contains('tile')) el.style.setProperty('--d', `${(i % 3) * 70}ms`);
+    if (!el.style.getPropertyValue('--d') && el.classList.contains('tile')) el.style.setProperty('--d', `${(i % 3) * 50}ms`);
     io.observe(el);
   });
+
+  // hero: load the hidden slideshow images only after the page has finished loading
+  const loadHero = () => $$('.hero img[data-src]').forEach((im) => { im.srcset = im.dataset.srcset; im.src = im.dataset.src; });
+  if (document.readyState === 'complete') loadHero(); else addEventListener('load', loadHero);
 
   // hero crossfade, columns staggered
   if (!reduced) $$('.hero-col').forEach((col, c) => {
@@ -86,7 +90,8 @@
     f.addEventListener('click', () => {
       if (!player) { location.href = `/films/#${f.dataset.film}`; return; }
       v.pause(); lastFocus = f;
-      pv.src = `/assets/video/${f.dataset.film}.mp4`; pv.poster = v.poster;
+      const small = innerWidth < 700 || navigator.connection?.saveData || /2g|3g/.test(navigator.connection?.effectiveType || '');
+      pv.src = `/assets/video/${f.dataset.film}${small ? '-480' : ''}.mp4`; pv.poster = v.poster;
       $('.player-title', player).textContent = f.dataset.title;
       player.hidden = false; document.body.classList.add('locked');
       pv.play().catch(() => {}); $('.lb-close', player).focus();

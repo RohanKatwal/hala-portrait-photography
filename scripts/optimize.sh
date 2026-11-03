@@ -24,9 +24,13 @@ copyvid () { # $1 = filename prefix, $2 = slug
   [ -f "$VID/$2.mp4" ] || ffmpeg -nostdin -loglevel error -i "video/$src" -vf "scale='min(720,iw)':-2" \
     -c:v libx264 -preset slow -crf 28 -maxrate 1300k -bufsize 2600k -pix_fmt yuv420p -profile:v high \
     -c:a aac -b:a 96k -ac 2 -movflags +faststart "$VID/$2.mp4"
+  # smaller 480p copy, used by the player on phones / slow connections
+  [ -f "$VID/$2-480.mp4" ] || ffmpeg -nostdin -loglevel error -i "video/$src" -vf "scale=480:-2" \
+    -c:v libx264 -preset slow -crf 29 -maxrate 700k -bufsize 1400k -pix_fmt yuv420p \
+    -c:a aac -b:a 80k -ac 2 -movflags +faststart "$VID/$2-480.mp4"
   if [ ! -f "$VID/$2.webp" ]; then
-    tmp=$(mktemp -d); qlmanage -t -s 900 -o "$tmp" "video/$src" >/dev/null 2>&1
-    cwebp -quiet -q 80 "$tmp"/*.png -o "$VID/$2.webp"; rm -rf "$tmp"
+    tmp=$(mktemp -d); qlmanage -t -s 540 -o "$tmp" "video/$src" >/dev/null 2>&1
+    cwebp -quiet -q 74 -resize 540 0 "$tmp"/*.png -o "$VID/$2.webp"; rm -rf "$tmp"
   fi
 }
 copyvid "Last project with this beautiful brand" tiyab-rourue
