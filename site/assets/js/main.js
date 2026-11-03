@@ -90,8 +90,7 @@
     f.addEventListener('click', () => {
       if (!player) { location.href = `/films/#${f.dataset.film}`; return; }
       v.pause(); lastFocus = f;
-      const small = innerWidth < 700 || navigator.connection?.saveData || /2g|3g/.test(navigator.connection?.effectiveType || '');
-      pv.src = `/assets/video/${f.dataset.film}${small ? '-480' : ''}.mp4`; pv.poster = v.poster;
+      pv.src = `/assets/video/${f.dataset.film}.mp4`; pv.poster = v.poster;
       $('.player-title', player).textContent = f.dataset.title;
       player.hidden = false; document.body.classList.add('locked');
       pv.play().catch(() => {}); $('.lb-close', player).focus();
