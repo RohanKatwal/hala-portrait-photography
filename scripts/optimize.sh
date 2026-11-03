@@ -1,6 +1,6 @@
 #!/bin/bash
 # Optimise source media (images/, video/) into site/assets for the web.
-# Requires: cwebp (brew install webp), python3 + Pillow, macOS qlmanage (video posters).
+# Requires: cwebp (brew install webp), ffmpeg (brew install ffmpeg), python3 + Pillow, macOS qlmanage (video posters).
 set -e
 cd "$(dirname "$0")/.."
 IMG=site/assets/img; VID=site/assets/video
@@ -20,7 +20,10 @@ done
 # Videos: copy with clean slugs + poster frames
 copyvid () { # $1 = filename prefix, $2 = slug
   src=$(ls video/ | grep -F -- "$1" | head -1)
-  [ -f "$VID/$2.mp4" ] || cp "video/$src" "$VID/$2.mp4"
+  # 720p H.264, moov atom first (+faststart) so browsers can start playing while streaming
+  [ -f "$VID/$2.mp4" ] || ffmpeg -nostdin -loglevel error -i "video/$src" -vf "scale='min(720,iw)':-2" \
+    -c:v libx264 -preset slow -crf 28 -maxrate 1300k -bufsize 2600k -pix_fmt yuv420p -profile:v high \
+    -c:a aac -b:a 96k -ac 2 -movflags +faststart "$VID/$2.mp4"
   if [ ! -f "$VID/$2.webp" ]; then
     tmp=$(mktemp -d); qlmanage -t -s 900 -o "$tmp" "video/$src" >/dev/null 2>&1
     cwebp -quiet -q 80 "$tmp"/*.png -o "$VID/$2.webp"; rm -rf "$tmp"
