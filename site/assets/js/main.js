@@ -7,6 +7,21 @@
   // year
   $$('[data-year]').forEach((el) => (el.textContent = new Date().getFullYear()));
 
+  // light / dark theme switch (remembered in this browser)
+  const themeBtn = $('.theme-btn');
+  const setThemeLabel = () => {
+    const light = document.documentElement.dataset.theme === 'light';
+    themeBtn.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
+    $('meta[name="theme-color"]').content = light ? '#f6f2ec' : '#0e0d0c';
+  };
+  themeBtn.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    setThemeLabel();
+  });
+  setThemeLabel();
+
   // header state
   const header = $('.site-header');
   const onScroll = () => header.classList.toggle('scrolled', scrollY > 40);
@@ -92,6 +107,7 @@
       v.pause(); lastFocus = f;
       pv.src = `/assets/video/${f.dataset.film}.mp4`; pv.poster = v.poster;
       $('.player-title', player).textContent = f.dataset.title;
+      player.classList.toggle('wide', f.classList.contains('wide'));
       player.hidden = false; document.body.classList.add('locked');
       pv.play().catch(() => {}); $('.lb-close', player).focus();
     });

@@ -35,18 +35,26 @@ const ALBUMS = {
     tagline: 'Editorial, couture & brand campaigns',
     blurb: 'Campaign and lookbook work for designers, jewellery houses and modest-fashion labels — heritage pieces, couture and street style, captured with a cinematic eye.',
     cover: 20,
-    ids: [28, 1, 20, 9, 2, 45, 27, 74, 47, 21, 10, 26, 18, 11, 6, 50, 12, 23, 25, 7, 44, 22, 5, 52, 51, 54, 53, 55],
+    ids: [28, 1, 20, 9, 83, 2, 74, 21, 10, 26, 18, 11, 6, 50, 12, 23, 25, 7, 44, 22, 5, 52, 51, 54, 53, 55],
+  },
+  wedding: {
+    title: 'Wedding',
+    tagline: 'Brides, love stories & bridal campaigns',
+    blurb: 'Wedding days, bridal portraits and bridal-collection campaigns — the getting ready, the gold, the gown and the quiet moments in between, captured with care.',
+    cover: 84,
+    ids: [84, 78, 85, 77, 27, 80, 79, 45, 81, 47],
   },
   monochrome: {
     title: 'Monochrome',
     tagline: 'Black & white, stripped back',
     blurb: 'When colour falls away, what is left is shape, shadow and emotion. A collection of black-and-white portraits that feel timeless.',
     cover: 71,
-    ids: [8, 3, 40, 42, 71, 19, 4, 41, 65, 57, 43, 49, 72, 73],
+    ids: [8, 3, 82, 40, 42, 71, 19, 4, 41, 65, 57, 43, 49, 72, 73],
   },
 };
 
 const FILMS = [
+  { slug: 'wedding-love-story', title: 'A Love Story — Wedding Film', meta: 'Wedding film · Bride & groom', dur: '1:10', wide: true },
   { slug: 'heritage-couture', title: 'Where Heritage Meets Haute Couture', meta: 'Fashion film · Sudanese couture', dur: '0:32' },
   { slug: 'tiyab-rourue', title: 'Tiyab Rourue × Elham Jewellery', meta: 'Brand campaign', dur: '0:24' },
   { slug: 'wedding-edition', title: 'Wedding Edition — Silk & Gold', meta: 'Bridal collection · Almaqam Jewellery', dur: '0:18' },
@@ -58,17 +66,20 @@ const FILMS = [
   { slug: 'sudan-independence', title: 'عزيز انت يا وطني — Sudan Independence Day', meta: 'Social-responsibility film', dur: '1:08' },
 ];
 
-const FEATURED = [45, 3, 37, 9, 46, 1, 60, 40, 74, 70, 27, 33];
+const FEATURED = [84, 3, 37, 9, 46, 78, 60, 40, 74, 70, 27, 33];
 const HERO = [[28, 70, 1], [8, 46, 20], [66, 74, 60]]; // three columns that crossfade
 
 const SERVICES = [
   ['Portrait sessions', 'Personal, family, graduation and creative portraits — outdoors or in studio.'],
+  ['Weddings & bridal', 'Wedding days, bridal portraits and cinematic wedding films — from getting ready to the last dance.'],
   ['Fashion & editorial', 'Lookbooks, campaigns and editorials for designers and boutiques.'],
   ['Brand & product content', 'Jewellery, perfume and product imagery that sells the story.'],
   ['Videography & reels', 'Short cinematic films and vertical reels for Instagram and TikTok.'],
 ];
 
-const COLLABS = ['Tiyab Rourue', 'Elham Jewellery', 'Almaqam Jewellery', 'Kwetu Africa', 'H.A.Y.Z.O'];
+const COLLABS = ['Tibid Community', 'Alma Fragrance', 'A&H Collection', 'Blanch Group', 'Creative Boutique', 'Noub Collection', 'Amna’s Wardrobe',
+  'Tiyab Rourue', 'Elham Jewellery', 'Almaqam Jewellery', 'Kwetu Africa', 'H.A.Y.Z.O'];
+const collabList = () => `<ul>${COLLABS.map((c) => `<li class="reveal">${esc(c)}</li>`).join('')}</ul>`;
 
 // ---------------------------------------------------------------- helpers
 const albumOf = Object.fromEntries(Object.entries(ALBUMS).flatMap(([k, a]) => a.ids.map((id) => [id, k])));
@@ -93,6 +104,8 @@ const ICONS = {
   phone: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',
   pin: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>',
   arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  sun: '<svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon: '<svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>',
   play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/></svg>',
 };
 
@@ -103,7 +116,7 @@ const socials = () => `
 
 const NAV = [['/work/', 'Work'], ['/albums/', 'Albums'], ['/films/', 'Films'], ['/about/', 'About'], ['/contact/', 'Contact']];
 
-function layout({ path, title, description, body, ogImage = '/assets/og.jpg', schema = '' }) {
+function layout({ path, title, description, body, ogImage = '/assets/og.jpg', schema = '', bodyClass = '' }) {
   const url = SITE.url + path;
   const nav = NAV.map(([href, label]) =>
     `<a href="${href}"${path.startsWith(href) ? ' aria-current="page"' : ''}>${label}</a>`).join('');
@@ -128,14 +141,18 @@ function layout({ path, title, description, body, ogImage = '/assets/og.jpg', sc
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 ${schema}
 </head>
-<body>
+<body${bodyClass ? ` class="${bodyClass}"` : ''}>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <a class="wordmark" href="/" aria-label="${SITE.brand} — home"><span>hala</span><em>.portrait.photography</em></a>
-  <nav class="nav" aria-label="Main">${nav}</nav>
-  <button class="menu-btn" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+  <div class="header-right">
+    <nav class="nav" aria-label="Main">${nav}</nav>
+    <button class="theme-btn" aria-label="Switch to light mode" title="Light / dark mode">${ICONS.sun}${ICONS.moon}</button>
+    <button class="menu-btn" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+  </div>
 </header>
 <div class="mobile-menu" hidden>
   <nav aria-label="Mobile">${NAV.map(([h, l], i) => `<a href="${h}" style="--i:${i}">${l}</a>`).join('')}</nav>
@@ -153,7 +170,7 @@ ${body}
   <div class="footer-grid">
     <div>
       <a class="wordmark" href="/"><span>hala</span><em>.portrait.photography</em></a>
-      <p class="muted">Portrait, fashion &amp; brand photographer and videographer based in ${SITE.location}.</p>
+      <p class="muted">Portrait, fashion, wedding &amp; brand photographer and videographer based in ${SITE.location}.</p>
     </div>
     <div>
       <h3>Contact</h3>
@@ -193,7 +210,7 @@ const pageHead = (eyebrow, title, lead) => `
 </section>`;
 
 const filmCard = (f, i) => `
-<button class="film reveal" data-film="${f.slug}" data-title="${esc(f.title)}" style="--d:${(i % 4) * 80}ms">
+<button class="film reveal${f.wide ? ' wide' : ''}" data-film="${f.slug}" data-title="${esc(f.title)}" style="--d:${(i % 4) * 80}ms">
   <video muted loop playsinline preload="none" poster="/assets/video/${f.slug}.webp" src="/assets/video/${f.slug}.mp4#t=0.1"></video>
   <span class="film-play">${ICONS.play}</span>
   <span class="film-info"><strong>${esc(f.title)}</strong><small>${esc(f.meta)} · ${f.dur}</small></span>
@@ -210,7 +227,7 @@ const schemaLD = `<script type="application/ld+json">${JSON.stringify({
   '@type': 'ProfessionalService',
   name: SITE.brand,
   alternateName: `${SITE.name} Photography`,
-  description: 'Portrait, fashion and brand photographer & videographer based in Abu Dhabi, UAE.',
+  description: 'Portrait, fashion, wedding and brand photographer & videographer based in Abu Dhabi, UAE.',
   url: SITE.url,
   image: SITE.url + '/assets/og.jpg',
   telephone: SITE.phoneTel,
@@ -233,9 +250,10 @@ const pages = {};
 
 pages['/'] = layout({
   path: '/',
-  title: 'Hala Jalal — Portrait & Fashion Photographer in Abu Dhabi | hala.portrait.photography',
-  description: 'Hala Jalal is a portrait, fashion and brand photographer & videographer based in Abu Dhabi, UAE. View the portfolio and book a session.',
+  title: 'Hala Jalal — Portrait, Fashion & Wedding Photographer in Abu Dhabi | hala.portrait.photography',
+  description: 'Hala Jalal is a portrait, fashion, wedding and brand photographer & videographer based in Abu Dhabi, UAE. View the portfolio and book a session.',
   schema: schemaLD,
+  bodyClass: 'home',
   body: `
 <section class="hero">
   <div class="hero-media" aria-hidden="true">
@@ -253,11 +271,11 @@ pages['/'] = layout({
   <span class="scroll-cue" aria-hidden="true">Scroll</span>
 </section>
 
-<div class="marquee" aria-hidden="true"><div>${Array(2).fill('<span>Portrait</span><i>✦</i><span>Fashion</span><i>✦</i><span>Monochrome</span><i>✦</i><span>Brand films</span><i>✦</i><span>Abu Dhabi · UAE</span><i>✦</i>').join('')}</div></div>
+<div class="marquee" aria-hidden="true"><div>${Array(2).fill('<span>Portrait</span><i>✦</i><span>Fashion</span><i>✦</i><span>Weddings</span><i>✦</i><span>Monochrome</span><i>✦</i><span>Brand films</span><i>✦</i><span>Abu Dhabi · UAE</span><i>✦</i>').join('')}</div></div>
 
 <section class="intro wrap">
   <p class="eyebrow reveal">Hello, I’m Hala</p>
-  <p class="statement reveal">I photograph people the way they deserve to be seen — <em>bold, elegant and real.</em> From heritage couture and fine jewellery to quiet portraits by the sea, every frame is made with care.</p>
+  <p class="statement reveal">I photograph people the way they deserve to be seen — <em>bold, elegant and real.</em> From weddings and heritage couture to fine jewellery and quiet portraits by the sea, every frame is made with care.</p>
   <a class="link reveal" href="/about/">More about me ${ICONS.arrow}</a>
 </section>
 
@@ -274,21 +292,36 @@ pages['/'] = layout({
 <section class="section films-band">
   <div class="wrap">
     <div class="section-head"><h2 class="reveal">Films &amp; <em>reels</em></h2><a class="link reveal" href="/films/">All films ${ICONS.arrow}</a></div>
-    <div class="films rail">${FILMS.slice(0, 4).map(filmCard).join('')}</div>
+    <div class="films rail">${FILMS.filter((f) => !f.wide).slice(0, 4).map(filmCard).join('')}</div>
   </div>
+</section>
+
+<section class="wrap section wedding-band">
+  <div class="wedding-text">
+    <p class="eyebrow reveal">Now booking weddings</p>
+    <h2 class="reveal">Your love story, <em>beautifully told.</em></h2>
+    <p class="reveal muted">From the getting-ready moments to the last dance — bridal portraits, wedding-day photography and cinematic wedding films across Abu Dhabi and the UAE.</p>
+    <div class="hero-actions reveal"><a class="btn" href="/albums/wedding/">Wedding album ${ICONS.arrow}</a><a class="btn ghost" href="/contact/">Enquire</a></div>
+  </div>
+  ${filmCard(FILMS.find((f) => f.wide), 0)}
 </section>
 
 <section class="wrap section services">
   <div class="section-head"><h2 class="reveal">What I <em>do</em></h2></div>
   <ol>${SERVICES.map(([t, d], i) => `<li class="reveal"><span>0${i + 1}</span><h3>${t}</h3><p>${d}</p></li>`).join('')}</ol>
+</section>
+
+<section class="wrap section collabs">
+  <p class="eyebrow reveal">Brands I’ve worked with</p>
+  ${collabList()}
 </section>`,
 });
 
 pages['/work/'] = layout({
   path: '/work/',
   title: 'Portfolio Gallery — Hala Jalal Photography, Abu Dhabi',
-  description: 'Portrait, fashion and monochrome photography by Hala Jalal, Abu Dhabi. Browse the full gallery.',
-  body: `${pageHead('Gallery', 'The <em>work</em>', 'A selection of portrait, fashion and black-and-white photography.')}
+  description: 'Portrait, fashion, wedding and monochrome photography by Hala Jalal, Abu Dhabi. Browse the full gallery.',
+  body: `${pageHead('Gallery', 'The <em>work</em>', 'A selection of portrait, fashion, wedding and black-and-white photography.')}
 <section class="wrap">
   <div class="filters reveal" role="tablist">
     <button class="on" data-filter="all">All</button>
@@ -300,9 +333,9 @@ pages['/work/'] = layout({
 
 pages['/albums/'] = layout({
   path: '/albums/',
-  title: 'Albums — Portrait, Fashion & Monochrome | Hala Jalal Photography',
-  description: 'Photo albums by Hala Jalal: portrait, fashion and monochrome collections from Abu Dhabi and across the UAE.',
-  body: `${pageHead('Collections', 'Albums', 'Three collections, three moods. Choose one to step inside.')}
+  title: 'Albums — Portrait, Fashion, Wedding & Monochrome | Hala Jalal Photography',
+  description: 'Photo albums by Hala Jalal: portrait, fashion, wedding and monochrome collections from Abu Dhabi and across the UAE.',
+  body: `${pageHead('Collections', 'Albums', 'Four collections, four moods. Choose one to step inside.')}
 <section class="wrap"><div class="albums tall">${Object.entries(ALBUMS).map(([k, a]) => albumCard(k, a, true)).join('')}</div></section>`,
 });
 
@@ -323,8 +356,8 @@ for (const [k, a] of Object.entries(ALBUMS)) {
 pages['/films/'] = layout({
   path: '/films/',
   title: 'Films & Reels — Hala Jalal Videography, Abu Dhabi',
-  description: 'Fashion films, brand campaigns and reels by videographer Hala Jalal, Abu Dhabi, UAE.',
-  body: `${pageHead('Videography', 'Films &amp; <em>reels</em>', 'Short cinematic films for fashion labels, jewellery houses and brands. Tap any film to watch with sound.')}
+  description: 'Wedding films, fashion films, brand campaigns and reels by videographer Hala Jalal, Abu Dhabi, UAE.',
+  body: `${pageHead('Videography', 'Films &amp; <em>reels</em>', 'Cinematic wedding films and short films for fashion labels, jewellery houses and brands. Tap any film to watch with sound.')}
 <section class="wrap"><div class="films grid">${FILMS.map(filmCard).join('')}</div></section>
 <div class="player" hidden role="dialog" aria-modal="true" aria-label="Video player">
   <button class="lb-close" aria-label="Close">×</button>
@@ -336,7 +369,7 @@ pages['/films/'] = layout({
 pages['/about/'] = layout({
   path: '/about/',
   title: 'About Hala Jalal — Photographer & Videographer, Abu Dhabi',
-  description: 'Meet Hala Jalal, the portrait, fashion and brand photographer & videographer behind hala.portrait.photography in Abu Dhabi, UAE.',
+  description: 'Meet Hala Jalal, the portrait, fashion, wedding and brand photographer & videographer behind hala.portrait.photography in Abu Dhabi, UAE.',
   schema: schemaLD,
   body: `
 <section class="about wrap">
@@ -346,11 +379,11 @@ pages['/about/'] = layout({
     <h1 class="reveal">Hi, I’m <em>Hala.</em></h1>
     <p class="lead reveal">I’m a photographer and videographer based in Abu Dhabi, working across the UAE.</p>
     <p class="reveal">My work lives where portraiture meets fashion. I love strong light, rich colour and the quiet confidence of someone who feels truly seen — and I’m just as happy shooting black and white when the moment calls for it.</p>
-    <p class="reveal">I work with individuals, designers, jewellery houses and brands to create images and short films that tell their story — from heritage couture and bridal collections to graduations, creative concepts and portraits by the sea.</p>
+    <p class="reveal">I work with individuals, designers, jewellery houses and brands to create images and short films that tell their story — from weddings, heritage couture and bridal collections to graduations, creative concepts and portraits by the sea.</p>
     <p class="reveal">Whether it’s your first photoshoot or your next campaign, I’ll guide you through every step so you can relax and enjoy it.</p>
     <div class="about-meta reveal">
       <div><h3>Based in</h3><p>${SITE.location}</p></div>
-      <div><h3>Specialities</h3><p>Portrait · Fashion · Monochrome · Film</p></div>
+      <div><h3>Specialities</h3><p>Portrait · Fashion · Wedding · Film</p></div>
       <div><h3>Licensed</h3><p>UAE Advertiser Permit<br>No. ${SITE.permit}</p></div>
     </div>
     <a class="btn reveal" href="/contact/">Work with me ${ICONS.arrow}</a>
@@ -363,23 +396,23 @@ pages['/about/'] = layout({
 </section>
 
 <section class="wrap section collabs">
-  <p class="eyebrow reveal">Worked with</p>
-  <ul>${COLLABS.map((c) => `<li class="reveal">${c}</li>`).join('')}</ul>
+  <p class="eyebrow reveal">Brands I’ve worked with</p>
+  ${collabList()}
 </section>`,
 });
 
 pages['/contact/'] = layout({
   path: '/contact/',
   title: 'Contact & Bookings — Hala Jalal Photography, Abu Dhabi',
-  description: 'Book a portrait, fashion or brand photoshoot with Hala Jalal in Abu Dhabi, UAE. Contact via WhatsApp, phone, Instagram or TikTok.',
+  description: 'Book a wedding, portrait, fashion or brand photoshoot with Hala Jalal in Abu Dhabi, UAE. Contact via WhatsApp, phone, Instagram or TikTok.',
   schema: schemaLD,
-  body: `${pageHead('Contact', 'Let’s <em>talk</em>', 'Tell me about your idea — a portrait session, a campaign or a brand film. I usually reply within a day.')}
+  body: `${pageHead('Contact', 'Let’s <em>talk</em>', 'Tell me about your idea — a wedding, a portrait session, a campaign or a brand film. I usually reply within a day.')}
 <section class="wrap contact">
   <form class="contact-form reveal" data-whatsapp="${SITE.whatsapp}">
     <label>Your name<input name="name" required autocomplete="name"></label>
     <label>Type of shoot
       <select name="type">
-        <option>Portrait session</option><option>Fashion / editorial</option><option>Brand or product</option>
+        <option>Portrait session</option><option>Wedding / bridal</option><option>Fashion / editorial</option><option>Brand or product</option>
         <option>Video / reels</option><option>Graduation</option><option>Something else</option>
       </select>
     </label>

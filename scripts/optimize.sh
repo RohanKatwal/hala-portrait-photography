@@ -18,16 +18,20 @@ for f in images/*.jpeg; do
 done
 
 # Videos: copy with clean slugs + poster frames
-copyvid () { # $1 = filename prefix, $2 = slug
-  src=$(ls video/ | grep -F -- "$1" | head -1)
+copyvid () { # $1 = filename prefix, $2 = slug, $3 = optional extra filter (e.g. crop), $4 = optional poster time (s)
+  src=$(ls video/ | grep -F -- "$1" | head -1); pre=${3:+$3,}
   # 720p H.264, moov atom first (+faststart) so browsers can start playing while streaming
-  [ -f "$VID/$2.mp4" ] || ffmpeg -nostdin -loglevel error -i "video/$src" -vf "scale='min(720,iw)':-2" \
+  [ -f "$VID/$2.mp4" ] || ffmpeg -nostdin -loglevel error -i "video/$src" -vf "${pre}scale='min(720,iw)':-2" \
     -c:v libx264 -preset slow -crf 28 -maxrate 1300k -bufsize 2600k -pix_fmt yuv420p -profile:v high \
     -c:a aac -b:a 96k -ac 2 -movflags +faststart "$VID/$2.mp4"
   # smaller 480p copy, used by the player on phones / slow connections
-  [ -f "$VID/$2-480.mp4" ] || ffmpeg -nostdin -loglevel error -i "video/$src" -vf "scale=480:-2" \
+  [ -f "$VID/$2-480.mp4" ] || ffmpeg -nostdin -loglevel error -i "video/$src" -vf "${pre}scale=480:-2" \
     -c:v libx264 -preset slow -crf 29 -maxrate 700k -bufsize 1400k -pix_fmt yuv420p \
     -c:a aac -b:a 80k -ac 2 -movflags +faststart "$VID/$2-480.mp4"
+  if [ ! -f "$VID/$2.webp" ] && [ -n "$4" ]; then
+    tmp=$(mktemp -d); ffmpeg -nostdin -loglevel error -ss "$4" -i "$VID/$2.mp4" -frames:v 1 -vf "scale='min(1280,iw)':-2" "$tmp/p.png"
+    cwebp -quiet -q 78 "$tmp/p.png" -o "$VID/$2.webp"; rm -rf "$tmp"
+  fi
   if [ ! -f "$VID/$2.webp" ]; then
     tmp=$(mktemp -d); qlmanage -t -s 540 -o "$tmp" "video/$src" >/dev/null 2>&1
     cwebp -quiet -q 74 -resize 540 0 "$tmp"/*.png -o "$VID/$2.webp"; rm -rf "$tmp"
@@ -42,6 +46,7 @@ copyvid "Shop our luxury handpicked" kwetu-tiyab
 copyvid "WEDDING EDITION" wedding-edition
 copyvid "_hala.portrait.photography is doing" peony-perfume
 copyvid "عزيز انت يا وطني" sudan-independence
+copyvid "Beautiful love story" wedding-love-story "crop=720:404:0:438" 15
 
 # Social share image + dimensions manifest
 python3 -E - <<'PY'
